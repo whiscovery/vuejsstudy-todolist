@@ -2,8 +2,7 @@
 <v-container>
   <v-layout row wrap>
     <v-flex xs6>
-      {{ todoList }}
-      <List/>
+      <List :todoList="todoList"/>
     </v-flex>
     <v-flex xs6>
       <ListAdd
