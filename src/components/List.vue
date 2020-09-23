@@ -1,46 +1,62 @@
 <template>
-  <v-card
-    class="mx-auto"
-    max-width="300"
-    tile
-  >
-    <v-list dense>
-      <v-subheader>Todo List</v-subheader>
-      <v-list-item-group v-model="item" color="primary">
-        <v-list-item
-          v-for="(todo, i) in todoList"
-          :key="i"
+    <div>
+        <v-card
+            class="pa-3 mb-3"
+            :class="{'done': list.status == 'done'}"
+            v-for="(list, index) in todoList"
+            :key="index"
         >
-          <v-list-item-content>
-            <v-list-item-title v-text="todo.memo"></v-list-item-title>
-          </v-list-item-content>
-          <v-list-icon @click="deleteTodo(i)">삭제</v-list-icon>
-        </v-list-item>
-      </v-list-item-group>
-    </v-list>
-  </v-card>
+            <p>{{list.memo}}</p>
+            <v-btn 
+                v-if="list.status === 'created'"
+                @click="$emit('statusControl', index, 'done')"
+                fab text small
+            >
+                완료
+            </v-btn>
+            <v-btn
+                v-else
+                @click="$emit('statusControl', index, 'created')"
+                fab text small
+            >
+                부활
+            </v-btn>
+            <v-btn
+                v-if="list.status == 'created'"
+                @click="listEdit(list.memo, index)"
+                fab text small
+            >
+                수정
+            </v-btn>
+            <v-btn
+                @click="$emit('listDelete', index)"
+                fab text small
+            >
+                제거
+            </v-btn>
+        </v-card>
+    </div>
 </template>
 
 <script>
-  export default {
-    data: () => ({
-      item: 1,
-      items: [
-        { text: 'Real-Time', icon: 'mdi-clock' },
-        { text: 'Audience', icon: 'mdi-account' },
-        { text: 'Conversions', icon: 'mdi-flag' },
-      ],
-    }),
-  }
-</script>
+import { eventBus } from '../main'
 
-<script>
-    export default {
-        props: [ 'todoList' ],
-        methods: {
-            deleteTodo(index) {
-                this.$delete(this.todoList, index)
-            }
+export default {
+    props: ['todoList'],
+    methods: {
+        listEdit(memo, index) {
+            eventBus.modifyList(memo, index)
         }
     }
+}
 </script>
+
+<style scoped>
+.done {
+    background-color: rgba(197, 23, 23, 0.5);
+}
+.done p {
+    text-decoration: line-through;
+    color: rgba(0, 0, 0, 0.5);
+}
+</style>

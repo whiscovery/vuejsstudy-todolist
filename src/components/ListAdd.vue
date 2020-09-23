@@ -1,32 +1,53 @@
 <template>
     <div>
          <v-textarea
-          outlined
+          outline
           v-model="memo"
           label="투두리스트 입력"
           value=""
         ></v-textarea>
-        <v-btn @click="listAdd">추가</v-btn>
+        <v-btn v-if="mode === 'add'" @click="listAdd">추가</v-btn>
+        <v-btn v-else @click="listEdit">수정</v-btn>
 
     </div>
 </template>
 
 <script>
+import { eventBus } from '../main'
+
 export default {
     data () {
         return {
-            memo: null
+            memo: null,
+            index: null,
+            mode: 'add'
         }
+    },
+    created() {
+        eventBus.$on('modifyList', (memo, index) => {
+            this.memo = memo
+            this.index = index
+            this.mode = 'edit'
+        })
     },
     methods: {
         listAdd() {
-            console.log("리스트추가")
             if(this.memo == null){
                 alert("할일을 입력하세요")
             } else {
                 this.$emit('listAdd', this.memo)
+                this.memo = null
             }
             
+        },
+        listEdit() {
+            if(this.memo == null){
+                alert("할일을 입력해주세요")
+            } else {
+                this.$emit("listEdit", this.memo, this.index)
+                this.memo = null
+                this.mode = 'add'
+            }
         }
     }
 }
